@@ -10,6 +10,10 @@ android {
     namespace = "com.sanket.mvvmstructure"
     compileSdk = 35
 
+    buildFeatures{
+        viewBinding = true
+    }
+
     defaultConfig {
         applicationId = "com.sanket.mvvmstructure"
         minSdk = 24
