@@ -5,11 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LifecycleObserver
+import androidx.navigation.NavOptions
+import androidx.navigation.findNavController
 import com.sanket.mvvmstructure.R
 import com.sanket.mvvmstructure.databinding.LoginFragmentBinding
 import com.sanket.mvvmstructure.databinding.SignupFragmentBinding
-import com.sanket.mvvmstructure.ui.viewmodel.appviewmodel
+import com.sanket.mvvmstructure.ui.Activity.baseActivity
+import com.sanket.mvvmstructure.ui.viewmodel.Appviewmodel
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -32,7 +37,7 @@ class SignupFragment : Fragment() {
 
     private var _binding: SignupFragmentBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: appviewmodel by viewModels()
+    private val viewModel: Appviewmodel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,18 +60,53 @@ class SignupFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.tvSwitch.setOnClickListener {
+            it.isFocusable
+            view.findNavController().navigate(R.id.action_signup_fragment_to_login_fragment)
+        }
 
         binding.signupbutton.setOnClickListener {
             val name = binding.outlinedEditText.text.toString()
             val password = binding.passwordinput.text.toString()
-            val email  = binding.emailinput.text.toString()
+            val email = binding.emailinput.text.toString()
 
-            viewModel.onEmailChanged(newEmail = email)
-            viewModel.onPasswordChanged(newPassword = password)
-            viewModel.onNameChanged(newName = name)
+            var EmailvalidationResult = (activity as baseActivity).emailvalidation(email)
+            {
+                binding.email.error = it
+            }
+            var PasswordvalidationResult = (activity as baseActivity).passwordvalidation(password)
+            {
+                binding.password.error = it
 
-            viewModel.signup()
+            }
+            var NamevalidationResult = (activity as baseActivity).namevalidation(name)
+            {
+                binding.name.error = it
+            }
+
+            if (EmailvalidationResult && PasswordvalidationResult && NamevalidationResult) {
+                viewModel.signup(name = name, password = password, email = email)
+            }
+            viewModel.errorMsgEmail.observe(viewLifecycleOwner) { msg ->
+                if(msg.isNotEmpty())
+                {
+                    binding.email.error = msg
+                }
+            }
+
         }
+            viewModel.successSignup.observe(viewLifecycleOwner) {
+
+                if(it) {
+                    binding.tvSwitch.findNavController().navigate(
+                        R.id.action_signup_fragment_to_login_fragment, null,
+                        NavOptions.Builder()
+                            .setPopUpTo(R.id.login_fragment, true)
+                            .build()
+                    )
+                }
+            }
+
     }
 
     companion object {

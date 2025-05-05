@@ -1,4 +1,4 @@
-package com.sanket.mvvmstructure.ui.mainscreen
+package com.sanket.mvvmstructure.ui.Activity
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
@@ -9,7 +9,7 @@ import com.sanket.mvvmstructure.R
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : baseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

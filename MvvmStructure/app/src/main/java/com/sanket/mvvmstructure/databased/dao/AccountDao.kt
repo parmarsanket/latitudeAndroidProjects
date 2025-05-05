@@ -17,4 +17,8 @@ interface AccountDao {
 
     @Query("SELECT EXISTS(SELECT 1 FROM Account WHERE email = :email)")
     fun checkEmailExists(email: String): Int
+
+    @Query("SELECT * FROM Account WHERE email = :email ")
+    fun getAccountByEmail(email: String):Account
+
 }

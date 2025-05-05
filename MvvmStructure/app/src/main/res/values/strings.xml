@@ -9,4 +9,6 @@
     <string name="login">LOGIN</string>
     <string name="forgot_your_password">Forgot your password?</string>
     <string name="or_sign_up_with_social_account">Or Sign up with social account</string>
+    <string name="create_a_new_account">Create a new Account</string>
+    <string name="logout">Logout</string>
 </resources>
