@@ -33,7 +33,7 @@
     </fragment>
     <fragment
         android:id="@+id/main_fragment"
-        android:name="com.sanket.mvvmstructure.ui.fragment.MainScreenFragment"
+        android:name="com.sanket.mvvmstructure.ui.fragment.mainFragment.MainScreenFragment"
         android:label="main_fragment"
         tools:layout="@layout/main_fragment" >
         <action

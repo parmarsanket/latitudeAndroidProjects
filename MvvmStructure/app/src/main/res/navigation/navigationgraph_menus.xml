@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigationgraph_menus"
+    app:startDestination="@id/homeFragment2">
+
+    <fragment
+        android:id="@+id/homeFragment2"
+        android:name="com.sanket.mvvmstructure.ui.fragment.menufragment.homeFragment"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/accountFragment"
+        android:name="com.sanket.mvvmstructure.ui.fragment.menufragment.accountFragment"
+        tools:layout="@layout/fragment_account" />
+
+    <fragment
+        android:id="@+id/moreFragmnet"
+        android:name="com.sanket.mvvmstructure.ui.fragment.menufragment.moreFragmnet"
+        tools:layout="@layout/fragment_more_fragmnet" />
+
+    <fragment
+        android:id="@+id/notificationFragment"
+        android:name="com.sanket.mvvmstructure.ui.fragment.menufragment.notificationFragment"
+        tools:layout="@layout/fragment_notification" />
+
+</navigation>

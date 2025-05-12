@@ -4,7 +4,7 @@ plugins {
     id("com.google.dagger.hilt.android") version "2.51.1"
     id("com.google.devtools.ksp") version "2.0.21-1.0.25"
     alias(libs.plugins.google.gms.google.services)
-
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22"
 }
 
 android {
@@ -75,5 +75,15 @@ dependencies {
 
     // Preferences
     implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    implementation("com.google.android.gms:play-services-maps:19.2.0")
+
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    // Kotlin Serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
 }

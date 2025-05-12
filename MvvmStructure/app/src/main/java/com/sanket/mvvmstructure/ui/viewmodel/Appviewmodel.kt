@@ -10,13 +10,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.sanket.mvvmstructure.databased.entity.Account
 import com.sanket.mvvmstructure.data.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okio.utf8Size
@@ -28,14 +32,21 @@ class Appviewmodel @Inject constructor(
 
 ):ViewModel() {
 
-
-
     var errorMsgEmail =  MutableLiveData<String>("")
     var errorMsgPassworld =  MutableLiveData<String>("")
     var errorMsgName =  MutableLiveData<String>("")
 
+    // Use MutableStateFlow or LiveData to observe bottom sheet state
+    private val _bottomSheetState = MutableLiveData<Int>()
+    val bottomSheetState: LiveData<Int> = _bottomSheetState
 
-
+    fun setBottomSheetState(state: Int) {
+        Log.d("BottomSheetTracker", "ViewModel: BottomSheet state set to $state")
+        _bottomSheetState.value = state
+    }
+    fun forceEmitCurrentState() {
+        _bottomSheetState.value = _bottomSheetState.value // triggers collectors again
+    }
 
     var _successSignup = MutableLiveData(false)
          private set
@@ -157,4 +168,6 @@ class Appviewmodel @Inject constructor(
             loginSuccess.value = true
         }
     }
+
+
 }
