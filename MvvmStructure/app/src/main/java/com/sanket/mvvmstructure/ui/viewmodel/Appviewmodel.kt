@@ -10,7 +10,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.auth.FirebaseAuth
@@ -25,6 +24,19 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okio.utf8Size
 import javax.inject.Inject
+import android.app.Activity
+import android.content.Intent
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.GetCredentialResponse
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.common.api.ApiException
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.firebase.auth.GoogleAuthProvider
 
 @HiltViewModel
 class Appviewmodel @Inject constructor(
@@ -133,6 +145,73 @@ class Appviewmodel @Inject constructor(
     var user = MutableLiveData<FirebaseUser?>(null)
     var errorMessage = MutableLiveData<String?>(null)
     var loginSuccess = MutableLiveData<Boolean>(false)
+    val googleSignInClient: GoogleSignInClient by lazy {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken("1028046261055-kq6vr31fff8o1kqth6nhca5ene0p4d4u.apps.googleusercontent.com") // Get from google-services.json
+            .requestEmail()
+            .build()
+        GoogleSignIn.getClient(context, gso)
+    }
+
+    lateinit var context: Context
+
+    fun initializeContext(appContext: Context) {
+        context = appContext
+    }
+
+    private val _googleUser = MutableLiveData<FirebaseUser?>()
+    val googleUser: LiveData<FirebaseUser?> = _googleUser
+
+    fun handleGoogleSignInResult(activity: Activity) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val credentialManager = CredentialManager.create(activity)
+
+                val googleIdOption = GetGoogleIdOption.Builder()
+                    .setFilterByAuthorizedAccounts(false) // Set to true to only show already-used accounts
+                    .setServerClientId("1028046261055-kq6vr31fff8o1kqth6nhca5ene0p4d4u.apps.googleusercontent.com")
+                    .build()
+
+                val request = GetCredentialRequest.Builder()
+                    .addCredentialOption(googleIdOption)
+                    .build()
+
+                val result = credentialManager.getCredential(
+                    request = request,
+                    context = activity
+                )
+
+                val credential = GoogleIdTokenCredential.createFrom(result.credential.data)
+                val idToken = credential.idToken
+
+                if (idToken != null) {
+
+                    firebaseAuthWithGoogle(idToken)
+                } else {
+                    errorMessage.postValue("Google Sign-In failed: No ID token.")
+                }
+
+            } catch (e: Exception) {
+                Log.e("GoogleSignIn", "Exception: ${e.message}")
+                errorMessage.postValue("Google Sign-In error: ${e.localizedMessage}")
+            }
+        }
+    }
+
+    private fun firebaseAuthWithGoogle(idToken: String) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        FirebaseAuth.getInstance().signInWithCredential(credential)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val currentUser = FirebaseAuth.getInstance().currentUser
+                    _googleUser.postValue(currentUser)
+                    user.value = currentUser
+                    loginSuccess.postValue(true)
+                } else {
+                    errorMessage.postValue("Firebase Auth failed: ${task.exception?.message}")
+                }
+            }
+    }
 
     fun signup(email: String, password: String, name: String) {
         repository.signup(email, password, name) { success, error ->
@@ -159,7 +238,9 @@ class Appviewmodel @Inject constructor(
     fun logout() {
         repository.logout()
         user.value = null
+        googleSignInClient.signOut()
         loginSuccess.value = false
+        _googleUser.value = null
     }
     fun autoLoginIfAvailable() {
         val currentUser = FirebaseAuth.getInstance().currentUser
@@ -168,6 +249,4 @@ class Appviewmodel @Inject constructor(
             loginSuccess.value = true
         }
     }
-
-
 }

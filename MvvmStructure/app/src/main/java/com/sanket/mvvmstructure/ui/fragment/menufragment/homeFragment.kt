@@ -153,6 +153,4 @@ private lateinit var viewPagerAdapter: MyViewPagerAdapter
         super.onDestroyView()
         _binding = null
     }
-
-
 }

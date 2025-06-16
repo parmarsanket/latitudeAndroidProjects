@@ -1,10 +1,13 @@
 package com.sanket.mvvmstructure.ui.fragment
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -33,7 +36,7 @@ class LoginFragment : Fragment() {
     private var _binding: LoginFragmentBinding? = null
     private val binding get() = _binding!!
     private val viewModel: Appviewmodel by activityViewModels()
-
+    val GOOGLE_SIGN_IN = 9001
     private var param1: String? = null
     private var param2: String? = null
 
@@ -72,6 +75,13 @@ class LoginFragment : Fragment() {
             view.findNavController().navigate(R.id.action_login_fragment_to_signup_fragment)
         }
         viewModel.autoLoginIfAvailable()
+
+
+// Inside onCreate or Composable LaunchedEffect
+        viewModel.initializeContext(requireContext())
+        binding.googelbtn.setOnClickListener{
+            viewModel.handleGoogleSignInResult(requireActivity())
+        }
         binding.loginButton.setOnClickListener {
             val email = binding.outlinedEditText.text.toString()
             val password = binding.passwordinput.text.toString()
@@ -116,6 +126,7 @@ class LoginFragment : Fragment() {
         }
 
     }
+
 
     companion object {
         /**

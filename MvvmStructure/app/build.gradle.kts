@@ -12,6 +12,7 @@ android {
     compileSdk = 35
 
     buildFeatures{
+
         viewBinding = true
     }
 
@@ -55,6 +56,9 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -86,4 +90,17 @@ dependencies {
     // Kotlin Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
+    // Firebase Auth
+    implementation ("com.google.firebase:firebase-bom:32.7.0") // or latest
+    implementation ("com.google.firebase:firebase-auth")
+
+    // Google Sign-In
+    implementation ("com.google.android.gms:play-services-auth:21.0.0") // Make sure this is added
+
+    // Credential Manager
+    implementation ("androidx.credentials:credentials:1.3.0")
+    implementation ("androidx.credentials:credentials-play-services-auth:1.3.0")
+
+    // Google Identity Services
+    implementation ("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 }

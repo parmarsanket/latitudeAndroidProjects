@@ -14,7 +14,7 @@ class TodoAdapter (
    private val todos:List<Station>,
     private val onItemClicked: (Station) -> Unit
 ):RecyclerView.Adapter<TodoAdapter.TodoViewHolder>(){
-    inner class TodoViewHolder(itemview:View):RecyclerView.ViewHolder(itemview)
+    inner class TodoViewHolder(itemview: View) : RecyclerView.ViewHolder(itemview)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.items,parent,false)
